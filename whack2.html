@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <style>
+        #gameArea {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border: 1px solid #000;
+        }
+        .icon {
+            position: absolute;
+            font-size: 48px; /* Ensure both icons are the same size */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+	<center>
+    <div id="gameArea"></div>
+    <button id="startButton">Start Game</button>
+    <div id="score">Smashade hunbar: 0</div>
+
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const startButton = document.getElementById('startButton');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+        let gameInterval;
+        let iconTimeout;
+
+        function startGame() {
+            score = 0;
+            scoreDisplay.textContent = `Smashade hunbar: ${score}`;
+            startButton.disabled = true;
+            
+            gameInterval = setInterval(showIcon, 1000); // Show an icon every second
+            setTimeout(endGame, 10000); // End game after 10 seconds
+        }
+
+        function showIcon() {
+            // Remove any existing icon
+            if (iconTimeout) {
+                clearTimeout(iconTimeout);
+                const existingIcon = document.querySelector('.icon');
+                if (existingIcon) {
+                    gameArea.removeChild(existingIcon);
+                }
+            }
+
+            // Decide whether to show a dog or a cat
+            const isCat = Math.random() < 0.25; // 25% chance
+            const icon = document.createElement('div');
+            if (isCat) {
+                icon.textContent = '🐱';
+                icon.className = 'icon cat';
+                icon.addEventListener('click', () => {
+                    score--;
+                    scoreDisplay.textContent = `Smashade hunbar: ${score}`;
+                    gameArea.removeChild(icon);
+                });
+            } else {
+                icon.textContent = '🐶';
+                icon.className = 'icon dog';
+                icon.addEventListener('click', () => {
+                    score++;
+                    scoreDisplay.textContent = `Smashade hunbar: ${score}`;
+                    gameArea.removeChild(icon);
+                });
+            }
+
+            // Random position
+            const x = Math.random() * (gameArea.clientWidth - 50);
+            const y = Math.random() * (gameArea.clientHeight - 50);
+            icon.style.left = `${x}px`;
+            icon.style.top = `${y}px`;
+
+            gameArea.appendChild(icon);
+
+            // Remove icon after a short time if not clicked
+            iconTimeout = setTimeout(() => {
+                if (gameArea.contains(icon)) {
+                    gameArea.removeChild(icon);
+                }
+            }, 500); // Icon stays for 0.6 seconds
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            startButton.disabled = false;
+        }
+
+        startButton.addEventListener('click', startGame);
+    </script>
+</center>
+</body>
+</html>
